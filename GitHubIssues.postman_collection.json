@@ -1,0 +1,495 @@
+{
+	"info": {
+		"_postman_id": "878d0237-d1ec-419f-91c0-ccbf8fcc7feb",
+		"name": "GitHubIssues",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Scenario",
+			"item": [
+				{
+					"name": "GetAllIssues",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Validate the schema\", () => {\r",
+									"    pm.response.to.have.jsonSchema(pm.variables.get('expectedSchema'));\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const schema ={\r",
+									"    \"type\": \"array\",\r",
+									"    \"items\": {\r",
+									"        \"type\" : \"object\",\r",
+									"        \"properties\": {\r",
+									"            \"id\":{\"type\":\"integer\"},\r",
+									"            \"node_id\":{\"type\":\"string\"},\r",
+									"            \"number\":{\"type\":\"integer\"},\r",
+									"            \"title\":{\"type\":\"string\"},\r",
+									"            \"user\":{\"type\":\"object\"},\r",
+									"            \"labels\":{\"type\":\"array\"},\r",
+									"            \"state\":{\"type\":\"string\"},\r",
+									"            \"locked\":{\"type\":\"boolean\"},\r",
+									"            \"assignee\":{\"type\":[\"string\", \"null\"]},\r",
+									"            \"assigniees\":{\"type\":\"array\"},\r",
+									"            \"milestone\":{\"type\":[\"string\", \"null\"]},\r",
+									"            \"comments\":{\"type\":\"integer\"},\r",
+									"            \"created_at\":{\"type\":\"string\"},\r",
+									"            \"updated_at\":{\"type\":\"string\"},\r",
+									"            \"closed_at\":{\"type\":[\"string\",\"null\"]},\r",
+									"            \"author_association\":{\"type\":\"string\"},\r",
+									"            \"active_lock_reason\":{},\r",
+									"            \"body\":{\"type\":[\"string\", \"null\"]},\r",
+									"            \"reactions\":{\"type\":\"object\"},\r",
+									"            \"timeline_url\":{\"type\":\"string\"},\r",
+									"            \"performed_via_github_app\":{}\r",
+									"        },\r",
+									"        \"required\":[\"id\", \"number\", \"title\", \"body\", \"user\"]\r",
+									"    }\r",
+									"};\r",
+									"\r",
+									"pm.variables.set('expectedSchema', schema);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://api.github.com/repos/thrw745/repo/issues",
+							"protocol": "https",
+							"host": [
+								"api",
+								"github",
+								"com"
+							],
+							"path": [
+								"repos",
+								"thrw745",
+								"repo",
+								"issues"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.variables.set('bodyDataCreate', JSON.stringify(pm.variables.get('createBody')));\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Validate the schema\", () => {\r",
+									"    pm.response.to.have.jsonSchema(pm.variables.get('schema'));\r",
+									"});\r",
+									"\r",
+									"response = pm.response.json();\r",
+									"requestTitle = pm.variables.get('createBody');\r",
+									"\r",
+									"pm.variables.set(\"newlyCreatedIssue\", response.number)\r",
+									"\r",
+									"pm.test(\"Validate created body matches with data:\", function () {\r",
+									"    pm.expect(response.title).to.eql(requestTitle.title)\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token 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",
+								"type": "text"
+							},
+							{
+								"key": "",
+								"value": "",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{bodyDataCreate}}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.github.com/repos/thrw745/repo/issues",
+							"protocol": "https",
+							"host": [
+								"api",
+								"github",
+								"com"
+							],
+							"path": [
+								"repos",
+								"thrw745",
+								"repo",
+								"issues"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.variables.set('issueId', pm.variables.get('newlyCreatedIssue'));\r",
+									"pm.variables.set('bodyDataUpdate', JSON.stringify(pm.variables.get('updateBody')));"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Validate the schema\", () => {\r",
+									"    pm.response.to.have.jsonSchema(pm.variables.get('schema'));\r",
+									"});\r",
+									"\r",
+									"response = pm.response.json();\r",
+									"updateBody = pm.variables.get('updateBody');\r",
+									"\r",
+									"pm.test(\"Validate Updated Title matches:\", function () {\r",
+									"    pm.expect(response.title).to.eql(updateBody.title)\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Validate Updated Body matches: \", function () {\r",
+									"    pm.expect(response.body).to.eql(updateBody.body)\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Validate issue state: \", function () {\r",
+									"    pm.expect(response.state).to.eql(updateBody.state)\r",
+									"});\r",
+									"pm.test(\"Validate Updated Label matches: \", function () {\r",
+									"    pm.expect(Object.keys(response.labels).length).to.eql(Object.keys(updateBody.labels).length);\r",
+									"  // TODO  pm.expect(Object.values(response.labels)).to.have.members((updateBody.labels));    \r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token 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",
+								"type": "text"
+							},
+							{
+								"key": "",
+								"value": "",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{bodyDataUpdate}}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.github.com/repos/thrw745/repo/issues/{{issueId}}",
+							"protocol": "https",
+							"host": [
+								"api",
+								"github",
+								"com"
+							],
+							"path": [
+								"repos",
+								"thrw745",
+								"repo",
+								"issues",
+								"{{issueId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Lock",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.variables.set('issueId', pm.variables.get('newlyCreatedIssue'));\r",
+									"pm.variables.set('lockReason', JSON.stringify(pm.variables.get('lockBody')));"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {\r",
+									"    pm.response.to.have.status(204);\r",
+									"    pm.variables.set('isLocked', true);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token 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",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{lockReason}}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.github.com/repos/thrw745/repo/issues/{{issueId}}/lock",
+							"protocol": "https",
+							"host": [
+								"api",
+								"github",
+								"com"
+							],
+							"path": [
+								"repos",
+								"thrw745",
+								"repo",
+								"issues",
+								"{{issueId}}",
+								"lock"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetAnIssue",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.variables.set('issueId', pm.variables.get('newlyCreatedIssue'));"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Validate the schema\", () => {\r",
+									"    pm.response.to.have.jsonSchema(pm.variables.get('schema'));\r",
+									"});\r",
+									"response = pm.response.json();\r",
+									"pm.test(\"Validate if issue is locked: \", function () {\r",
+									"    pm.expect(response.locked).to.equal(pm.variables.get('isLocked'));\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true,
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token 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",
+								"type": "text"
+							},
+							{
+								"key": "",
+								"value": "",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://api.github.com/repos/thrw745/repo/issues/{{issueId}}",
+							"protocol": "https",
+							"host": [
+								"api",
+								"github",
+								"com"
+							],
+							"path": [
+								"repos",
+								"thrw745",
+								"repo",
+								"issues",
+								"{{issueId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Unlock",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {\r",
+									"    pm.response.to.have.status(204);\r",
+									"    pm.variables.set('isLocked', false);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.variables.set('issueId', pm.variables.get('newlyCreatedIssue'));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token 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",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://api.github.com/repos/thrw745/repo/issues/{{issueId}}/lock",
+							"protocol": "https",
+							"host": [
+								"api",
+								"github",
+								"com"
+							],
+							"path": [
+								"repos",
+								"thrw745",
+								"repo",
+								"issues",
+								"{{issueId}}",
+								"lock"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"postman.setNextRequest(getNextRequest())",
+							"function getNextRequest() {",
+							"",
+							"    let requests; ",
+							"    if(Array.isArray(pm.globals.get(\"remainingRequests\"))===true){",
+							"        requests = pm.globals.get(\"remainingRequests\");",
+							"    } else{ ",
+							"        requests = pm.iterationData.get(\"requestScenario\");",
+							"    }",
+							"    const nextRequest = requests.shift();",
+							"    pm.globals.set(\"remainingRequests\", requests);",
+							"    if (nextRequest === undefined) {",
+							"        pm.globals.clear(\"remainingRequests\");",
+							"        return null;   ",
+							"    }",
+							"    return nextRequest;",
+							"}"
+						]
+					}
+				}
+			]
+		}
+	]
+}

@@ -1,0 +1,55 @@
+[{
+    "requestScenario":[
+        "GetAllIssues",
+        "Create",
+        "Update",
+        "Lock",
+        "GetAnIssue",
+        "Unlock",
+        "GetAnIssue"
+    ],
+    "schema":{
+        "type" : "object",
+        "properties": {
+            "id":{"type":"integer"},
+            "node_id":{"type":"string"},
+            "number":{"type":"integer"},
+            "title":{"type":"string"},
+            "user":{"type":"object"},
+            "labels":{"type":"array"},
+            "state":{"type":"string"},
+            "locked":{"type":"boolean"},
+            "assignee":{"type":["object", "null"]},
+            "assigniees":{"type":"array"},
+            "milestone":{"type":["string", "null", "integer"]},
+            "comments":{"type":"integer"},
+            "created_at":{"type":"string"},
+            "updated_at":{"type":"string"},
+            "closed_at":{"type":["string","null"]},
+            "author_association":{"type":"string"},
+            "active_lock_reason":{},
+            "body":{"type":["string", "null"]},
+            "reactions":{"type":"object"},
+            "timeline_url":{"type":"string"},
+            "performed_via_github_app":{}
+        },
+        "required":["id", "number", "title", "body", "user"]
+    },
+    "createBody": {
+        "title": "Scenario Create Only title"
+    },
+    "updateBody": {
+        "title": "Scenario Update title",
+        "body": "TestBody",
+        "labels": [{
+            "name": "bug"
+        },
+        {
+            "name": "Pressure"
+        }],
+        "state": "closed"
+    },
+    "lockBody": {
+        "lock_reason":"resolved"
+    }
+}]
